@@ -1,0 +1,12 @@
+[stage]
+8.8.8.8
+
+[stage:vars]
+ansible_connection=ssh
+ansible_user=deploy
+ansible_become_method=sudo
+ansible_port=14872
+ansible_ssh_pipelining=True
+ansible_ssh_common_args=-o StrictHostKeyChecking=no
+ansible_python_interpreter=/usr/bin/python3
+

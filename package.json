@@ -1,0 +1,51 @@
+{
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "grunt",
+    "sass": "grunt sass",
+    "rollup": "grunt rollup",
+    "favicons": "grunt realFavicon",
+    "production": "NODE_ENV=production grunt",
+    "svg_sprite": "grunt svg_sprite",
+    "check": "eslint  . --ext .js,.svelte"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.6",
+    "@sentry/browser": "^7.14.2",
+    "@sentry/tracing": "^7.14.2",
+    "bootstrap": "^5.2.0",
+    "bootstrap-select": "^1.14.0-beta3",
+    "inputmask": "^5.0.7",
+    "jquery": "^3.6.0",
+    "jquery-datetimepicker": "^2.5.21"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "eslint-plugin-unicorn": "^44.0.2",
+    "grunt": "^1.5.3",
+    "grunt-cli": "^1.4.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-csso": "^2.2.4",
+    "grunt-real-favicon": "^0.2.4",
+    "grunt-rollup": "^12.0.0",
+    "grunt-sass": "^3.1.0",
+    "grunt-sass-tilde-importer": "^1.0.2",
+    "grunt-svg-sprite": "^2.0.0",
+    "grunt-terser": "^2.0.0",
+    "node-sass": "^7.0.3",
+    "rollup": "^2.0.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.54.5",
+    "svelte": "^3.49.0",
+    "terser": "^5.0.0"
+  }
+}

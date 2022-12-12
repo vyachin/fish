@@ -1,0 +1,11 @@
+/.idea/
+/vendor/
+/node_modules/
+
+.DS_Store
+
+/.env
+
+/.phpunit.result.cache
+/docker-compose.override.yml
+/.phpcs-cache

@@ -1,0 +1,20 @@
+---
+- name: Apply migrations
+  ansible.builtin.command: php yii migrate/up --interactive=0
+  register: migrate
+  changed_when: "'No new migrations' not in migrate.stdout"
+  args:
+    chdir: "{{ ansistrano_release_path.stdout }}"
+
+- name: Flush db schema
+  ansible.builtin.command: php yii cache/flush-schema --interactive=0
+  register: flushdb
+  changed_when: "'was flushed' in flushdb.stdout"
+  args:
+    chdir: "{{ ansistrano_release_path.stdout }}"
+
+- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+  become: true

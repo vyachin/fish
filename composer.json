@@ -1,0 +1,46 @@
+{
+  "name": "auto-washes/market",
+  "authors": [
+    {
+      "name": "Vladimir Vyachin",
+      "email": "v.vyachin@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "yiisoft/yii2": "^2.0",
+    "yiisoft/yii2-queue": "^2.3",
+    "yiisoft/yii2-redis": "^2.0",
+    "yiisoft/yii2-bootstrap5": "^2.0",
+    "yiisoft/yii2-httpclient": "^2.0",
+    "vlucas/phpdotenv": "^5.4",
+    "giggsey/libphonenumber-for-php": "^8.12",
+    "league/flysystem": "^3.2",
+    "league/flysystem-aws-s3-v3": "^3.2",
+    "sentry/sdk": "^3.3"
+  },
+  "config": {
+    "process-timeout": 1800,
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
+    }
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "yiisoft/yii2-debug": "^2.1",
+    "phpstan/phpstan": "^1.5",
+    "squizlabs/php_codesniffer": "^3.7",
+    "phpunit/phpunit": "^9.5"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "market\\": "."
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="Code Standard">
+    <arg name="extensions" value="php"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <ini name="memory_limit" value="-1"/>
+
+    <file>common</file>
+    <file>console</file>
+
+    <exclude-pattern>common/ide-helper.php</exclude-pattern>
+    <exclude-pattern>common/bootstrap.php</exclude-pattern>
+
+    <rule ref="PSR12">
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>/migrations/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>/migrations/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
+    </rule>
+
+</ruleset>

@@ -1,0 +1,7 @@
+parameters:
+    level: 5
+    paths:
+        - common
+        - console
+    bootstrapFiles:
+        - vendor/yiisoft/yii2/Yii.php

@@ -1,0 +1,129 @@
+name: Continuous Integration
+
+on: push
+
+env:
+  MYSQL_DSN: mysql:host=127.0.0.1;dbname=market
+  MYSQL_DATABASE: market
+  MYSQL_USER: root
+  MYSQL_PASSWORD: qweasdzxc
+  MYSQL_ROOT_PASSWORD: qweasdzxc
+  REDIS_HOSTNAME: localhost
+  DEBUG: 1
+  ENV: test
+  VERSION: ci
+  SENTRY_DSN:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          tools: phpunit, phpstan, phpcs, cs2pr
+
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          character set server: 'utf8mb4'
+          collation server: 'utf8mb4_unicode_ci'
+          mysql version: '8'
+          mysql database: $MYSQL_DATABASE
+          mysql root password: $MYSQL_ROOT_PASSWORD
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: "6"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - run: yarn install
+
+      - run: yarn check
+
+      - name: Install dependencies
+        run: composer install --prefer-dist
+
+      - name: Wait for MySQL
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --password=$MYSQL_ROOT_PASSWORD --silent; do
+            sleep 1
+          done
+
+      - name: Run phpstan
+        run: phpstan analyse -c phpstan.neon --memory-limit=-1 --xdebug
+
+      - name: Run phpcs
+        run: phpcs -q --report=checkstyle | cs2pr
+
+      - name: Apply migrations
+        run: php yii migrate/up --interactive=0
+
+      - name: Run unit tests
+        run: phpunit --coverage-text
+
+  build:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    env:
+      build: build
+    if: contains('refs/heads/master refs/heads/stage', github.ref)
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --no-progress
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - run: yarn install
+
+      - run: yarn production
+
+      - run: mkdir ${{ github.workspace }}/${{ env.build }}
+
+      - run: tar --exclude=.gitignore --exclude=.git --exclude=.github --exclude=.ansible --exclude=.docker --exclude=runtime --exclude=storage --exclude=node_modules --exclude=${{ env.build }} -czvf ${{ github.workspace }}/${{ env.build }}/${{ github.sha }}.tar.gz .
+
+      - uses: jakejarvis/s3-sync-action@master
+        env:
+          AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: ${{ env.build }}
+
+  deploy-stage:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    if: github.ref == 'refs/heads/stage'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Play ansible playbook
+        uses: arillso/action.playbook@master
+        with:
+          playbook: .ansible/deploy.yml
+          inventory: .ansible/hosts
+          galaxy_file: .ansible/requirements.yml
+          private_key: ${{ secrets.DEPLOY_KEY }}
+          limit: stage
+          module_path: /tmp
+          extra_vars: ansistrano_s3_url=${{ secrets.AWS_S3_ENDPOINT }} ansistrano_s3_bucket=${{ secrets.AWS_S3_BUCKET }} ansistrano_s3_object=${{ github.sha }}.tar.gz ansistrano_s3_region=${{ secrets.AWS_REGION }} ansistrano_s3_aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} ansistrano_s3_aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} project_version=${{ github.sha }} nginx_config_template=nginx.stage.conf.j2
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
+          ANSIBLE_DEPRECATION_WARNINGS: 'false'

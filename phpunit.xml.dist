@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="common/tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+    <coverage>
+        <include>
+            <directory suffix=".php">common</directory>
+        </include>
+    </coverage>
+    <testsuites>
+        <testsuite name="Unit tests">
+            <directory>common/tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <!--<log type="coverage-html" target="build/coverage"/>-->
+        <!--<log type="coverage-clover" target="build/logs/clover.xml"/>-->
+        <!--<log type="coverage-crap4j" target="build/logs/crap4j.xml"/>-->
+        <!--<log type="coverage-xml" target="build/logs/coverage"/>-->
+        <junit outputFile="./runtime/junit.xml"/>
+    </logging>
+</phpunit>
